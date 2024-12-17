@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind plugin;
+
+#progress-bar {
+    transition: width 0.3s ease-in-out; /* Smooth transition for width */
+    z-index: 5; /* Keep it behind the text content */
+    opacity: 0.7; /* Slight transparency for a subtle effect */
+}
+
+/* Ensure the configuration panel appears on top of other elements */
+#config-panel {
+    z-index: 9999; /* A high z-index to stay above other elements */
+    position: fixed; /* Make sure the panel stays in the correct location */
+}
+
+.kill {
+	cursor: pointer;
+}
+
+.gallery-image {
+	cursor: pointer;
+}
+
+#filepond {
+    width: 300px;
+}
+
+#topbar {
+	width: 100%
+}
+
+#generation-form {
+    width: 100%;             
+    max-width: 600px;        
+    margin: 0 auto;          
+    padding: 0 20px;         
+    box-sizing: border-box;   
+}
+
+@media (max-width: 600px) {
+    #generation-form {
+        width: 100%;          
+        max-width: 90%;      
+        padding: 0 10px;      
+    }
+}
+
+.filepond--drop-label {
+	color: #4c4e53;
+}
+
+.filepond--label-action {
+	text-decoration-color: #babdc0;
+}
+
+.filepond--panel-root {
+	border-radius: 2em;
+	background-color: #edf0f4;
+	height: 1em;
+}
+
+.filepond--item-panel {
+	background-color: #595e68;
+}
+
+.filepond--drip-blob {
+	background-color: #7f8a9a;
+}

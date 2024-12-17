@@ -1,0 +1,1023 @@
+<!doctype html>
+<!--
+ Copyright 2021 Google LLC
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroLens File Upload</title>
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+    <link rel="stylesheet" href="{{url_for('static',filename='dist/css/output.css')}}">
+    <!-- FilePond CSS -->
+    <link href="https://unpkg.com/filepond@^4/dist/filepond.css" rel="stylesheet" />
+    <!-- FilePond Plugins -->
+    <script src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.js"></script>
+    <script src="https://unpkg.com/filepond/dist/filepond.js"></script>
+    <script
+        src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.js"></script>
+    <script
+        src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.js"></script>
+    <script
+        src="https://unpkg.com/filepond-plugin-image-exif-orientation/dist/filepond-plugin-image-exif-orientation.js"></script>
+    <link href="https://unpkg.com/filepond-plugin-file-poster/dist/filepond-plugin-file-poster.css" rel="stylesheet">
+    <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css"
+        rel="stylesheet" />
+    <script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-file-poster/dist/filepond-plugin-file-poster.js"></script>
+    <!-- jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!-- flowbite -->
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
+</head>
+
+<body class="bg-gradient-to-b text-white from-gray-900 to-gray-800 min-h-screen flex flex-col items-center">
+
+    <!-- Header -->
+
+    <nav id="topbar" class="bg-white shadow-md dark:bg-gray-900">
+        <div class="max-w-screen-xl mx-auto p-4 flex justify-between items-center">
+            <!-- Hamburger Menu (Left Side) -->
+            <button id="hamburger-menu" data-collapse-toggle="mobile-menu" type="button"
+                class="inline-flex items-center p-2 w-10 h-10 justify-center text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+                aria-controls="mobile-menu" aria-expanded="false">
+                <span class="sr-only">Open main menu</span>
+                <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+
+            <!-- Logo and Brand -->
+            <div class="flex items-center space-x-3">
+                <a href="#" class="flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-10 h-10 text-gray-800 dark:text-white">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-.253.74-.558 1.449-.908 2.122M2.458 12a16.098 16.098 0 00.908 2.122m-.908-2.122A16.094 16.094 0 012.458 12m0 0c1.274 4.057 5.065 7 9.542 7 4.478 0 8.268-2.943 9.542-7" />
+                    </svg>
+                </a>
+                <span class="text-2xl font-bold text-gray-800 dark:text-white">NeuroLens</span>
+            </div>
+
+            <!-- Gear Icon for Configuration (Right Side) -->
+            <div class="flex items-center space-x-4">
+                <a href="#" id="gear-icon" class="flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor"
+                        class="w-8 h-8 text-gray-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.591 1.095c1.532-.89 3.374.953 2.486 2.486a1.724 1.724 0 001.095 2.591c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.095 2.591c.89 1.532-.953 3.374-2.486 2.486a1.724 1.724 0 00-2.591 1.095c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.591-1.095c-1.532.89-3.374-.953-2.486-2.486a1.724 1.724 0 00-1.095-2.591c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.095-2.591c-.89-1.532.953-3.374 2.486-2.486a1.724 1.724 0 002.591-1.095z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </a>
+
+                <!-- Hidden Links for Desktop -->
+                <div class="hidden w-full md:block md:w-auto" id="desktop-menu">
+                    <ul class="flex flex-col md:flex-row md:space-x-8 text-gray-700 dark:text-white font-medium">
+                        <li>
+                            <a href="#"
+                                class="block py-2 px-3 rounded md:p-0 hover:text-blue-600 dark:hover:text-blue-400">Home</a>
+                        </li>
+                        <li>
+                            <a href="#"
+                                class="reset-menu block py-2 px-3 rounded md:p-0 hover:text-blue-600 dark:hover:text-blue-400">Reset</a>
+                        </li>
+                        <li>
+                            <a href="#"
+                                class="logout-menu block py-2 px-3 rounded md:p-0 hover:text-blue-600 dark:hover:text-blue-400">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+    </nav>
+
+    <!-- Sliding Mobile Menu -->
+    <div id="mobile-menu"
+        class="fixed top-0 left-0 w-3/4 h-full bg-white shadow-lg z-50 transform -translate-x-full transition-transform duration-300 ease-in-out md:hidden dark:bg-gray-900">
+        <div class="p-4">
+            <button id="close-menu" class="text-gray-600 dark:text-gray-400">
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <ul class="mt-6 space-y-6">
+                <li><a href="#"
+                        class="block text-gray-800 dark:text-white text-lg font-medium hover:text-blue-600 dark:hover:text-blue-400">Home</a>
+                </li>
+                <li><a href="#"
+                        class="reset-menu block text-gray-800 dark:text-white text-lg font-medium hover:text-blue-600 dark:hover:text-blue-400">Reset</a>
+                </li>
+                <li><a href="#"
+                        class="logout-menu block text-gray-800 dark:text-white text-lg font-medium hover:text-blue-600 dark:hover:text-blue-400">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <p></p>
+
+    <!-- Training banner --->
+
+    <div id="informational-banner" data-dismiss-mode="hide" tabindex="-1"
+        class="hidden fixed top-2 left-0 right-0 z-50 flex flex-col md:flex-row justify-between w-full max-w-screen-lg mx-auto p-4 border-b border-gray-200 bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+
+        <!-- Text Section -->
+        <div class="mb-4 md:mb-0 md:mr-4">
+            <h2 class="mb-1 text-base font-semibold text-gray-900 dark:text-white">Congrats!</h2>
+            <p class="flex items-center text-sm font-normal text-gray-500 dark:text-gray-400">
+                You have enough images to train your personal AI influencer.
+            </p>
+        </div>
+
+        <!-- Buttons Section -->
+        <div class="flex items-center justify-between space-x-4">
+            <a id="train-button" href="#"
+                class="inline-flex items-center justify-center px-3 py-2 text-xs font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                Train My AI
+                <svg class="w-3 h-3 ml-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                    fill="none" viewBox="0 0 14 10">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M1 5h12m0 0L9 1m4 4L9 9" />
+                </svg>
+            </a>
+
+            <!-- Close Button -->
+            <button data-dismiss-target="#informational-banner" type="button"
+                class="flex-shrink-0 inline-flex justify-center w-7 h-7 items-center text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-lg p-1.5 dark:hover:bg-gray-600 dark:hover:text-white">
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 14 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                </svg>
+                <span class="sr-only">Close banner</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Training Underway Banner -->
+    <div id="training-banner"
+        class="hidden flex flex-col md:flex-row items-center p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400 max-w-screen-lg mx-auto"
+        role="alert">
+
+        <!-- Icon Section -->
+        <svg class="flex-shrink-0 w-5 h-5 mb-2 md:mb-0 md:mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor" viewBox="0 0 20 20">
+            <path
+                d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+        </svg>
+
+        <!-- Text Section -->
+        <div>
+            <span class="font-medium">Note:</span> Your AI is training. This will take about 30 minutes.
+        </div>
+    </div>
+
+    <!-- Training Fail Banner -->
+    <div id="training-error"
+        class="hidden flex flex-col md:flex-row items-center mt-2 p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 max-w-screen-lg mx-auto"
+        role="alert">
+
+        <!-- Icon Section -->
+        <svg class="flex-shrink-0 w-5 h-5 mb-2 md:mb-0 md:mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor" viewBox="0 0 20 20">
+            <path
+                d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+        </svg>
+
+        <!-- Text Section -->
+        <div>
+            <span class="font-medium">Whoops!</span> There was an error training your AI. Please try again.
+        </div>
+    </div>
+
+    <!-- Modal/Popup for Configuration Panel -->
+    <div id="config-panel" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden z-50">
+        <div class="bg-white dark:bg-gray-700 rounded-lg shadow-lg p-6 max-w-sm w-full">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Configure Your Profile</h2>
+                <button id="close-config" class="text-gray-500 hover:text-gray-700 dark:text-gray-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <form id="configForm" class="space-y-4">
+                <div class="flex flex-col">
+                    <label for="gender" class="text-gray-600 dark:text-gray-300 font-semibold">Gender</label>
+                    <input type="text" id="gender" name="gender"
+                        class="border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 mt-1 bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder="e.g., Male, Female, Non-binary">
+                </div>
+                <div class="flex flex-col">
+                    <label for="height" class="text-gray-600 dark:text-gray-300 font-semibold">Height (cm or
+                        inches)</label>
+                    <input type="text" id="height" name="height"
+                        class="border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 mt-1 bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder="e.g., 5'10'' or 178 cm">
+                </div>
+                <div class="flex flex-col">
+                    <label for="weight" class="text-gray-600 dark:text-gray-300 font-semibold">Weight (kg or
+                        lbs)</label>
+                    <input type="text" id="weight" name="weight"
+                        class="border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 mt-1 bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder="e.g., 165 lbs or 75 kg">
+                </div>
+                <div class="flex flex-col">
+                    <label for="build" class="text-gray-600 dark:text-gray-300 font-semibold">Build</label>
+                    <select id="build" name="build"
+                        class="border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 mt-1 bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <option value="athletic">Athletic</option>
+                        <option value="average">Average</option>
+                        <option value="thin">Thin</option>
+                        <option value="heavy">Heavy</option>
+                    </select>
+                </div>
+                <button type="submit"
+                    class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">Save</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Generation Underway Banner -->
+    <div id="generation-banner"
+        class="hidden flex flex-col md:flex-row items-center mt-2 p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400 max-w-screen-lg mx-auto"
+        role="alert">
+
+        <!-- Icon Section -->
+        <svg class="flex-shrink-0 w-5 h-5 mb-2 md:mb-0 md:mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor" viewBox="0 0 20 20">
+            <path
+                d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+        </svg>
+
+        <!-- Text Section -->
+        <div>
+            <span class="font-medium">Note:</span> Your Image is generating. This can take about 1-2 minutes.
+        </div>
+    </div>
+
+
+    <!-- Generation Fail Banner -->
+    <div id="generation-error"
+        class="hidden flex flex-col md:flex-row items-center mt-2 p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 max-w-screen-lg mx-auto"
+        role="alert">
+
+        <!-- Icon Section -->
+        <svg class="flex-shrink-0 w-5 h-5 mb-2 md:mb-0 md:mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor" viewBox="0 0 20 20">
+            <path
+                d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+        </svg>
+
+        <!-- Text Section -->
+        <div>
+            <span class="font-medium">Whoops!</span> There was an error generating your image. Please try again.
+        </div>
+    </div>
+
+    <!-- Title -->
+    <header class="text-center my-6">
+        <h1 class="text-3xl font-bold text-amber-500">Bring Your Vision to Life</h1>
+    </header>
+
+    <!-- Instructional Paragraph -->
+    <p class="text-center text-lg mb-8" id="instruction">Please upload images to feed your personal AI Influencer</p>
+
+    <!-- FilePond File Uploader -->
+    <div class="pond" id="pond_div">
+        <input type="file" multiple class="filepond" name="filepond" id="filepond" data-max-files="25"
+            data-max-file-size="20MB">
+    </div>
+
+    <!-- image generation prompt -->
+    <div class="hidden" id="generation-form">
+        <div id="generation-container"
+            class="relative w-full mb-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+            <!-- X Button to Clear the Input -->
+            <button id="clear-prompt-btn"
+                class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-10.707a1 1 0 00-1.414-1.414L10 8.586 7.707 6.293a1 1 0 00-1.414 1.414L8.586 10l-2.293 2.293a1 1 0 001.414 1.414L10 11.414l2.293 2.293a1 1 0 001.414-1.414L11.414 10l2.293-2.293z"
+                        clip-rule="evenodd" />
+                </svg>
+            </button>
+
+            <!-- Progress bar: for dropping files to get the prompt -->
+            <div id="progress-bar" class="absolute rounded-t-lg rounded-b-lg top-0 left-0 h-full bg-blue-500"
+                style="width: 0%;"></div>
+
+            <div class="px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
+                <label for="prompt" class="sr-only">Your prompt</label>
+                <textarea id="prompt" rows="4"
+                    class="w-full px-0 text-sm text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400"
+                    placeholder="Describe an image using me:-) as your AI's name..." required></textarea>
+            </div>
+
+            <!-- Button Section with separation and distinct styles -->
+            <div class="flex items-center justify-between px-3 py-2 border-t dark:border-gray-600">
+                <!-- Random Vision Button (left, informative) -->
+                <button id="random-prompt-btn"
+                    class="py-2.5 px-4 text-xs font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-700 dark:text-white dark:bg-gray-600 dark:hover:bg-gray-500">
+                    Random Vision
+                </button>
+
+                <!-- Generate Button (right, CTA) -->
+                <button id="generate-button"
+                    class="py-2.5 px-6 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800">
+                    Generate
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gallery -->
+    <div id="gallery"></div>
+
+    <!-- Hidden modal for larger image -->
+    <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center hidden p-4">
+        <span id="closeModal" class="absolute top-4 right-4 text-white cursor-pointer text-3xl">&times;</span>
+        <img id="modalImage"
+            class="rounded-lg transform scale-90 transition duration-500 ease-in-out max-w-full max-h-full md:max-w-3/4 md:max-h-3/4">
+    </div>
+
+    <!-- Modal reset (initially hidden) -->
+    <div id="reset-modal" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+            <h2 class="text-lg font-semibold mb-4">Confirm Reset</h2>
+            <p class="text-gray-700 mb-6">This will delete your model and all images. Are you sure you want to proceed?
+            </p>
+            <div class="flex justify-end">
+                <button id="cancel-reset"
+                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2">Cancel</button>
+                <button id="confirm-reset"
+                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FilePond JS -->
+    <script src="https://unpkg.com/filepond@^4/dist/filepond.js"></script>
+
+    <!-- Initialize FilePond -->
+    <script>
+
+        FilePond.registerPlugin(
+            // validates the size of the file
+            FilePondPluginFileValidateSize,
+            // corrects mobile image orientation
+            FilePondPluginImageExifOrientation,
+            FilePondPluginFilePoster,
+            // sets max file size
+            FilePondPluginFileValidateSize
+        );
+
+        // override default options
+        FilePond.setOptions({
+            dropOnPage: true,
+            dropOnElement: true,
+            maxFileSize: "20MB"
+        });
+
+    </script>
+
+    <!-- local script -->
+    <script>
+        $(document).ready(function () {
+
+            // get a reference to the input element
+            const inputElement = document.querySelector('input[type="file"]')
+
+            const pond = FilePond.create(inputElement, {
+                allowMultiple: true,
+                maxFiles: 25,
+                maxFileSize: "20MB",
+                credits: false,
+                server: {
+                    url: 'https://neurolens.scott.ai',
+                    process: '/upload',
+                    revert: null,
+                    headers: {
+                        // Add any necessary headers here
+                        'session': get_session_id()
+                    }
+                }
+            })
+
+            function hide_it(id) {
+                $(id).removeClass('block').addClass('hidden');
+            }
+
+            function show_it(id) {
+                $(id).removeClass('hidden').addClass('block');
+            }
+
+            // Handle Hamburger Menu Click
+            $('#hamburger-menu').on('click', function () {
+                $('#mobile-menu').removeClass('-translate-x-full');
+                if ($(window).width() >= 768) {
+                    $('#desktop-menu').addClass('hidden');  // Hide desktop menu when mobile is open on desktop
+                }
+            });
+
+            function close_mobile_menu() {
+                $('#mobile-menu').addClass('-translate-x-full');
+                if ($(window).width() >= 768) {
+                    $('#desktop-menu').removeClass('hidden');  // Show desktop menu back when mobile is closed on desktop
+                }
+            }
+
+            // Handle Mobile Menu Close Button
+            $('#close-menu').on('click', function () {
+                close_mobile_menu();
+            });
+
+            // Ensure that on window resize, the correct menu is shown based on screen size
+            $(window).on('resize', function () {
+                if ($(window).width() >= 768) {
+                    $('#desktop-menu').removeClass('hidden');  // Show desktop menu on large screens
+                    $('#mobile-menu').addClass('-translate-x-full');  // Hide mobile menu
+                } else {
+                    $('#desktop-menu').addClass('hidden');  // Hide desktop menu on small screens
+                }
+            });
+
+            function use_submit_state() {
+                //console.log("showing informational banner");
+                show_it('#informational-banner');
+                hide_it('#generation-form');
+                hide_it('#training-banner');
+            }
+
+            function use_training_state() {
+                //console.log("showing training banner");
+                hide_it('#informational-banner');
+                hide_it('#generation-form');
+                show_it('#training-banner');
+            }
+
+            function use_generation_state() {
+                //console.log("showing generation form");
+                $('#instruction').text("Describe a vision for me:-)");
+                hide_it('#informational-banner');
+                hide_it('#training-banner');
+                show_it('#generation-form');
+                hide_it('#pond_div');
+                pond.destroy();
+            }
+
+            function use_unknown_state() {
+                //console.log("hiding both banners");
+                hide_it('#informational-banner');
+                hide_it('#training-banner');
+                hide_it('#generation-form');
+            }
+
+            function train_bar() {
+                $.ajax({
+                    url: '/state',          // The URL for the AJAX request
+                    type: 'GET',            // Method of the request
+                    headers: { 'session': get_session_id() },
+                    success: function (info) {
+                        // On success, replace the content of the #gallery div with the response data
+                        //info['state'] = 'ready' // TODO remove
+                        if (info['state'] == 'submit') {
+                            use_submit_state();
+                        } else if (info['state'] == 'training') {
+                            use_training_state();
+                        } else if (info['state'] == 'ready') {
+                            use_generation_state();
+                        }
+                        else {
+                            use_unknown_state();
+                        }
+                        //console.log(info);
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle errors here
+                        console.log('Error getting state.');
+                        hide_it('#informational-banner');
+                    }
+                });
+
+            }
+
+            function invalidate() {
+                $.ajax({
+                    url: '/clear',          // The URL for the AJAX request
+                    type: 'GET',            // Method of the request
+                    headers: { 'session': get_session_id() },
+                    success: function (info) {
+                        // On success, replace the content of the #gallery div with the response data
+                        //console.log(info);
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle errors here
+                        console.log('Error clearing gallery.');
+                    }
+                });
+
+            }
+
+            function loadGallery() {
+                $.ajax({
+                    url: '/grid',          // The URL for the AJAX request
+                    type: 'GET',            // Method of the request
+                    headers: { 'session': get_session_id() },
+                    success: function (data) {
+                        // On success, replace the content of the #gallery div with the response data
+                        $('#gallery').html(data);
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle errors here
+                        $('#gallery').html('<p>Error loading gallery.</p>');
+                    }
+                });
+            }
+
+            function startTrain() {
+                $.ajax({
+                    url: '/train',          // The URL for the AJAX request
+                    type: 'GET',            // Method of the request
+                    headers: { 'session': get_session_id() },
+                    success: function (data) {
+                        // On success, replace the content of the #gallery div with the response data
+                        train_bar();
+                        hide_it('#informational-banner');
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle errors here
+                        console.log("Error during training.");
+                        hide_it('#informational-banner');
+                        hide_it('#training-banner');
+                        show_it('#training-error');
+
+                        // Hide the error message after 5 seconds (5000 milliseconds)
+                        setTimeout(function () {
+                            hide_it('#training-error');
+
+                            // Call the train-bar function after the message disappears
+                            train_bar();
+                        }, 5000);
+                    }
+                });
+            }
+
+            // Event listener when a file has been processed (uploaded)
+            pond.on('processfile', function (error, file) {
+                if (!error) {
+                    pond.removeFile(file.id); // remove the file from the pond
+                    invalidate(); // clear the zip file
+                    loadGallery(); // show all
+                    train_bar(); // check if we have enough images
+                }
+            });
+
+            // train button
+            $('#train-button').on('click', function () {
+                startTrain();
+            });
+
+            // 
+            function add_gallery_skeleton_image() {
+                var div = '<div class="relative flex justify-center items-center">';
+                div += '<div class="skeleton bg-gray-200 animate-pulse h-48 w-full rounded-lg"></div>';
+                div += '</div>'
+                $('#gallery-images').prepend(div);
+            }
+
+            //
+            // Image generation
+            //
+
+            // Clear the input (textarea) when the "X" button is clicked
+            $('#clear-prompt-btn').on('click', function () {
+                $('#prompt').val(''); // Clear the textarea
+            });
+
+            function generate_image() {
+                $.ajax({
+                    url: '/genImage',        // The URL for the AJAX request
+                    type: 'POST',            // Method of the request
+                    contentType: 'application/json',
+                    headers: { 'session': get_session_id() },
+                    data: JSON.stringify({
+                        prompt: $('#prompt').val()
+                    }),
+                    success: function (data) {
+                        // Turn off the generate button while we wait
+                        // and monitor the outcome.
+                        $('#generate-button').prop('disabled', true)
+                        add_gallery_skeleton_image();
+                        monitor_generation();
+                        //console.log("Success: ");
+                        //console.log(data);
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle errors here
+                        console.log("Error generating image.");
+                        hide_it('#generation-banner');
+                        show_it('#generation-error');
+                        // Hide the error message after 5 seconds (5000 milliseconds)
+                        setTimeout(function () {
+                            hide_it('#generation-error');
+                            $('#generate-button').prop('disabled', false)
+                        }, 5000);
+                    }
+                });
+            }
+
+            function monitor_generation() {
+                $.ajax({
+                    url: '/image_status',          // The URL for the AJAX request
+                    type: 'GET',            // Method of the request
+                    headers: { 'session': get_session_id() },
+                    success: function (info) {
+                        // On success, replace the content of the #gallery div with the response data
+                        if (info['status'] == 'succeeded') {
+                            // Turn on the generate button
+                            $('#generate-button').prop('disabled', false)
+                            hide_it('#generation-banner');
+                            loadGallery();
+                            train_bar();
+                        } else if (info['status'] == 'error') {
+                            hide_it('#generation-banner');
+                            show_it('#generation-error');
+                            // Hide the error message after 5 seconds (5000 milliseconds)
+                            setTimeout(function () {
+                                hide_it('#generation-error');
+                                $('#generate-button').prop('disabled', false);
+                                loadGallery()
+                            }, 5000);
+                        } else {
+                            // Keep checking
+                            show_it('#generation-banner');
+                            setTimeout(monitor_generation, 5000);
+                        }
+                        //console.log(info); // TODO remove
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle errors here
+                        console.log('Error getting state.');
+                        hide_it('#generation-banner');
+                        show_it('#generation-error');
+                        // Hide the error message after 5 seconds (5000 milliseconds)
+                        setTimeout(function () {
+                            hide_it('#generation-error');
+                            $('#generate-button').prop('disabled', false)
+                            loadGallery();
+                        }, 5000);
+                    }
+                });
+            }
+
+            // generate button
+            $('#generate-button').on('click', function () {
+                //console.log("We will generate the image now.");
+                generate_image();
+            });
+
+            // logout button
+            $('.logout-menu').on('click', function () {
+
+                // hide mobile menu
+                close_mobile_menu();
+
+                $.ajax({
+                    url: '/logout',          // The URL for the AJAX request
+                    type: 'GET',            // Method of the request
+                    headers: { 'session': get_session_id() },
+                    success: function (info) {
+                        // On success, replace the content of the #gallery div with the response data
+                        //console.log(info);
+                        clear_session(); // important
+                        window.location.href = info['url'];
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle errors here
+                        console.log('Error logging out.');
+                    }
+                });
+            });
+
+            // Event listener for the reset menu item
+            $('.reset-menu').on('click', function () {
+                close_mobile_menu();
+                $('#reset-modal').removeClass('hidden');
+            });
+
+            // Event listener for the Cancel button
+            $('#cancel-reset').on('click', function () {
+                $('#reset-modal').addClass('hidden');
+            });
+
+            // Event listener for the Confirm button
+            $('#confirm-reset').on('click', function () {
+                // Perform the reset action (e.g., delete model and images)
+                $.ajax({
+                    url: '/reset',
+                    type: 'GET',
+                    headers: { 'session': get_session_id() },
+
+                    success: function (info) {
+                        // Successfully reset the data, you can refresh or update UI accordingly
+                       // console.log('Reset successful');
+                        $('#reset-modal').addClass('hidden');
+                        loadGallery();
+                    },
+
+                    error: function (xhr, status, error) {
+                        // Handle errors during the reset process
+                        console.log('Error performing reset.');
+                    }
+                });
+            });
+
+            // image kill switch for dynamic content, bind to doc instead
+            $(document).on('click', '.kill', function () {
+                var url = $(this).attr('data-url');
+                var image_id = '#' + $(this).attr('data-image-id');
+                //console.log("Clicked on " + url);
+
+                // Start pulsing the image while waiting for the deletion
+                function pulseImage() {
+                    $(image_id).animate({ opacity: 0.5 }, 500)
+                        .animate({ opacity: 1 }, 500, pulseImage);  // Looping animation
+                }
+
+                pulseImage(); // Start the pulse
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    headers: { 'session': get_session_id() },
+                    success: function (info) {
+                        // On success, stop the pulsing and fade out the image
+                        //console.log(info);
+                        $(image_id).stop(true, true);  // Stop the pulsing animation
+                        $(image_id).fadeOut(500, function () {
+                            $(this).remove();  // Remove the image from the DOM
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle errors here
+                        console.log('Error deleting image.');
+                        $(image_id).stop(true, true);  // Stop pulsing if there's an error
+                    }
+                });
+            });
+
+            // viewing an image
+            $(document).on('click', '.gallery-image', function () {
+                // Get the large image URL from the data attribute
+                const largeImageUrl = $(this).data('large');
+
+                // Set the modal image src to the large image URL
+                $('#modalImage').attr('src', largeImageUrl);
+
+                // Show the modal with a smooth scale transition
+                $('#imageModal').removeClass('hidden');
+                setTimeout(function () {
+                    $('#modalImage').removeClass('scale-90').addClass('scale-100');
+                }, 100); // Delay to allow smooth transition
+            });
+
+            // Close the modal on close button click
+            $('#closeModal').on('click', function () {
+                // Add the scale-90 class back for the shrink effect
+                $('#modalImage').removeClass('scale-100').addClass('scale-90');
+
+                // Hide the modal after the transition
+                setTimeout(function () {
+                    $('#imageModal').addClass('hidden');
+                }, 500); // Match the duration of the transition
+            });
+
+            // Close modal when clicking outside the image
+            $('#imageModal').on('click', function (e) {
+                if ($(e.target).is('#imageModal') || $(e.target).is('#closeModal')) {
+                    $('#modalImage').removeClass('scale-100').addClass('scale-90');
+                    setTimeout(function () {
+                        $('#imageModal').addClass('hidden');
+                    }, 500);
+                }
+            });
+
+            function replacePlaceholdersWithProfile(promptTemplate) {
+                // Retrieve the stored profile from local storage
+                const userProfile = JSON.parse(localStorage.getItem('userProfile'));
+
+                // Check if the userProfile exists in local storage
+                if (userProfile) {
+                    // Replace placeholders with the corresponding values
+                    const updatedPrompt = promptTemplate
+                        .replace(/{height}/g, userProfile.height)
+                        .replace(/{weight}/g, userProfile.weight)
+                        .replace(/{gender}/g, userProfile.gender)
+                        .replace(/{build}/g, userProfile.build);
+
+                    return updatedPrompt;
+                } else {
+                    // If no profile data exists, return the original template
+                    return promptTemplate;
+                }
+            }
+
+
+            // Handle Random Prompt Button click
+            $('#random-prompt-btn').on('click', function () {
+                // Select a random prompt from the array
+                const randomTemplate = prompts[Math.floor(Math.random() * prompts.length)];
+                const randomPrompt = replacePlaceholdersWithProfile(randomTemplate);
+
+                // Insert the random prompt into the textarea
+                $('#prompt').val(randomPrompt);
+            });
+
+            $(document).ready(function () {
+                // Open the configuration panel when the gear icon is clicked
+                $('#gear-icon').on('click', function () {
+                    $('#config-panel').removeClass('hidden');
+                });
+
+                // Close the configuration panel
+                $('#close-config').on('click', function () {
+                    $('#config-panel').addClass('hidden');
+                });
+
+                // Close the panel if user clicks outside the modal content
+                $(window).on('click', function (event) {
+                    if (event.target.id === 'config-panel') {
+                        $('#config-panel').addClass('hidden');
+                    }
+                });
+
+                // Capture form submission and input data
+                $('#configForm').on('submit', function (event) {
+                    event.preventDefault();
+
+                    const gender = $('#gender').val();
+                    const height = $('#height').val();
+                    const weight = $('#weight').val();
+                    const build = $('#build').val();
+
+                    // Create a dictionary with the form values
+                    const userProfile = {
+                        gender: gender,
+                        height: height,
+                        weight: weight,
+                        build: build
+                    };
+
+                    // Store the dictionary in local storage
+                    localStorage.setItem('userProfile', JSON.stringify(userProfile));
+
+                    // Optionally, log the values to verify
+                    console.log("User Profile Saved:", userProfile);
+
+                    // Close the panel after saving
+                    $('#config-panel').addClass('hidden');
+                });
+
+                // Preload the form with stored values if available
+                const storedProfile = JSON.parse(localStorage.getItem('userProfile'));
+                if (storedProfile) {
+                    $('#gender').val(storedProfile.gender);
+                    $('#height').val(storedProfile.height);
+                    $('#weight').val(storedProfile.weight);
+                    $('#build').val(storedProfile.build);
+                }
+            });
+
+            // a little prompt magic
+
+            const blueBorder = 'border-blue-500 bg-blue-50 dark:bg-blue-900';
+            const greenBorder = 'border-green-500 bg-green-50 dark:bg-green-900';
+            const redBorder = 'border-red-500 bg-red-50 dark:bg-red-900';
+            const grayBorder = 'border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700';
+
+            // Prevent default behavior for drag and drop
+            $('#generation-form').on('dragover', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // Remove any previous border and background colors, and add Tailwind classes for highlight
+                $('#generation-container').removeClass(grayBorder)
+                    .addClass(blueBorder);
+            });
+
+            $('#generation-form').on('dragleave', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // Restore the original Tailwind border and background classes
+                $('#generation-container').removeClass(blueBorder)
+                    .addClass(grayBorder);
+            });
+
+            // Handle file drop
+            $('#generation-form').on('drop', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // Remove highlight and reset to original styling
+                $('#generation-container').removeClass(blueBorder)
+                    .addClass(grayBorder);
+
+                let file = e.originalEvent.dataTransfer.files[0]; // Get the dropped file
+                let formData = new FormData();
+                formData.append('file', file);
+
+                // Reset progress bar width to 0% and make it visible
+                $('#progress-bar').css('width', '0%');
+
+                // Add highlighting for active upload
+                $('#generation-container').removeClass(grayBorder).addClass(greenBorder);
+
+                // Upload file to /read_prompt endpoint with progress tracking
+                $.ajax({
+                    url: '/read_prompt',
+                    type: 'POST',
+                    data: formData,
+                    headers: {
+                        // Add any necessary headers here
+                        'session': get_session_id()
+                    },
+                    processData: false,
+                    contentType: false,
+                    xhr: function () {
+                        var xhr = new window.XMLHttpRequest();
+
+                        // Listen to the `progress` event to update the progress bar
+                        xhr.upload.addEventListener('progress', function (e) {
+                            if (e.lengthComputable) {
+                                let percentComplete = (e.loaded / e.total) * 100;
+
+                                // Update the progress bar width based on upload progress
+                                $('#progress-bar').css('width', percentComplete + '%');
+                            }
+                        }, false);
+                        return xhr;
+                    },
+                    success: function (response) {
+                        // Update the textarea with the returned prompt string
+                        $('#prompt').val(response.prompt);
+
+                        // Upon success, set progress bar to 100% and then fade it out
+                        $('#progress-bar').css('width', '100%');
+                        setTimeout(function () {
+                            $('#progress-bar').css('width', '0%'); // Reset progress bar for future uploads
+                            $('#generation-container').removeClass(greenBorder)
+                                .addClass(grayBorder);
+                        }, 1000);
+                    },
+                    error: function (err) {
+                        console.error('Error reading prompt:', err);
+
+                        // Reset border and background after error
+                        $('#generation-container').removeClass(greenBorder)
+                            .addClass(redBorder);
+
+                        // revert to the default border after some time
+                        setTimeout(function () {
+                            $('#generation-container').removeClass(redBorder)
+                                .addClass(grayBorder);
+                        }, 3000);  // Revert to default styling after 3 seconds
+                    }
+                });
+            });
+
+            // load our gallery
+            loadGallery();
+
+            // check if we have enough images
+            train_bar();
+        });
+
+    </script>
+
+</body>
+
+</html>
